@@ -52,3 +52,11 @@ exports.checkTopic = (topic_name) => {
       return topic_name;
     });
 };
+
+exports.checkComment = (id) => {
+  return db
+    .query(`SELECT * FROM comments WHERE comment_id=$1`, [id])
+    .then(({ rows }) => {
+      return rows;
+    });
+};

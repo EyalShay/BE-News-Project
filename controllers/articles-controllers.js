@@ -1,10 +1,15 @@
-const { checkUser, checkArticleExists } = require("../db/seeds/utils");
+const {
+  checkComment,
+  checkUser,
+  checkArticleExists,
+} = require("../db/seeds/utils");
 const {
   selectArticlesById,
   updateArticlesById,
   fetchArticles,
   insertComments,
   fetchCommentsByArticleId,
+  removeCommentById,
 } = require("../models/articles-models");
 
 exports.getArticlesById = (req, res, next) => {
@@ -87,4 +92,21 @@ exports.getCommentsByArticleId = (req, res, next) => {
     .catch((err) => {
       next(err);
     });
+};
+
+exports.deleteCommentById = async (req, res, next) => {
+  try {
+    const id = req.params.comment_id;
+    const exists = await checkComment(id);
+    if (exists.length === 0) {
+      throw {
+        status: 404,
+        msg: "Comment was not found!",
+      };
+    }
+    await removeCommentById(id);
+    res.sendStatus(204);
+  } catch (err) {
+    next(err);
+  }
 };

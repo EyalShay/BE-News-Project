@@ -523,3 +523,37 @@ describe("GET /api/articles (queries)", () => {
       });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("status:204 No Content Status, endpoint should delete the specified comment from the database", () => {
+    const ID = 2;
+    return request(app)
+      .delete(`/api/comments/${ID}`)
+      .expect(204)
+      .then(() => {
+        return request(app)
+          .get(`/api/comments/2`)
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Endpoint was not found!");
+          });
+      });
+  });
+  test("status:404 when trying to delete a comment that doesn't exist from a valid endpoint", () => {
+    const ID = 90;
+    return request(app)
+      .delete(`/api/comments/${ID}`)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment was not found!");
+      });
+  });
+  test("status:400 when trying to delete a comment with an invalid endpoint", () => {
+    return request(app)
+      .delete(`/api/comments/blorp`)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid request!");
+      });
+  });
+});
